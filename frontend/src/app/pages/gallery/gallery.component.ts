@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, OnInit, signal, viewChild } from '@angular/core';
+import { Component, computed, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
 import { ImageService } from '../../services/image.service';
 import { CommonModule } from '@angular/common';
 import { image } from '../../types/image.types';
@@ -25,9 +25,9 @@ export class GalleryComponent implements OnInit {
   selectedImageUrl: string| null  = null; // URL for selected image
 
   galleryForm = viewChild<ElementRef<HTMLFormElement>>('fileForm');
+  imageService = inject(ImageService); 
 
-
-  constructor(private readonly imageService: ImageService) {}
+  constructor() {}
 
   ngOnInit() {
     this.loadImages();
