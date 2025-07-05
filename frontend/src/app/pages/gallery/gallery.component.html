@@ -1,0 +1,76 @@
+<h2 class="header-container">Brand Images Gallery</h2>
+
+<!-- Upload control -->
+<div class="upload-container">
+  <form #fileForm>
+    <input type="file" accept="image/*" (change)="onFile($event)"/>
+  </form>
+  <button (click)="upload()" [disabled]="loading || !selectedFile()">
+    Upload
+  </button>
+</div>
+
+@if(showPreviewWindow()){
+  <div class="upload-view-container">
+    @if(displayImageUrl){
+      <div class="preview">
+          <img [src]="displayImageUrl" class="preview-img" alt="Selected" />
+      </div>
+    }
+  </div>
+}
+<div class="display-description">
+    @if (displayImageUrl) {
+        <div class="display-img-container">
+            <span>viewing :{{selectedFile() ? 'Uploaded Image - ':"Selected Image - " }} {{selectedImageUrl}}</span>
+            <button (click)="resetInputForm()">❌</button>
+        </div> 
+    }
+</div>
+
+@if(error){
+    <p style="color:red;">❌ {{error}}</p>
+}
+
+<!-- Gallery table -->
+@if(imageList().length){
+    <table class="gallery-table">
+        <thead>
+            <tr>
+            <th>Image</th>
+            <th>File Name </th>
+            <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for(img of imageList(); track img.key) {
+                <tr>
+                    <td>
+                        <img [src]="img.url" alt="thumb" />
+                    </td>
+                    <td>{{ img.key.substring(8) }}</td>
+                    <td>
+                        <a href="#" (click)="viewImage(img); $event.preventDefault()">View</a>
+                        |
+                        <button (click)="delete(img.key)" [disabled]="loading">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<!-- Pagination -->
+<div class="pagination">
+  <button (click)="back()" [disabled]="prevTokens.length==0 || loading">
+    ← Back
+  </button>
+  <button (click)="next()" [disabled]="!nextToken || loading">
+    Next →
+  </button>
+
+  @if(loading) {
+    <span>Loading...</span>
+  }
+</div>
+
