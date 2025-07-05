@@ -26,10 +26,10 @@ jobs:
       - name: Create ECR repository if not exists
         id: ecr-repo
         run: |
-          REPO_NAME="igallery-repo" 
+          REPO_NAME="igallery-app" 
           REPO_URI=$(aws ecr describe-repositories --repository-names $REPO_NAME --query 'repositories[0].repositoryUri' --output text)
           echo "repo_uri=$REPO_URI" >> $GITHUB_OUTPUT
-          
+
       - name: Build & Push Placeholder
         run: |
           IMAGE_URI="${{ steps.ecr-repo.outputs.repo_uri }}:latest"
