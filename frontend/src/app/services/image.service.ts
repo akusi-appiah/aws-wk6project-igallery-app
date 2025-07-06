@@ -31,18 +31,8 @@ export class ImageService {
     return this.http.post(`${this.baseUrl}/upload`, form);
   }
 
-  // async uploadImage(file: File): Promise<string> {
-  //   const form = new FormData();
-  //   form.append('image', file);
-  //   const resp$ = this.http.post<{ url: string }>(
-  //     `${this.baseUrl}/upload`,
-  //     form
-  //   );
-  //   const resp = await firstValueFrom(resp$);
-  //   return resp.url;
-  // }
 
-    // List images with pagination
+  // List images with pagination
 
   listImages(token?: string, size: number = 3): Observable<ImageListResponse> {
     let query = `?size=${size}`;
@@ -51,35 +41,7 @@ export class ImageService {
     }
     return this.http.get<ImageListResponse>(`${this.baseUrl}/images${query}`);
   }
-  //   // List images with pagination
-  // async listImages(
-  //   token?: string,
-  //   limit = 5
-  // ): Promise<ImageListResponse> {
-  //   let params = new HttpParams().set('size', limit.toString());
-  //   if (token) {
-  //     params = params.set('token', token);
-  //   }
-  //   const resp$ = this.http.get<ImageListResponse>(
-  //     `${this.baseUrl}/images`,
-  //     { params }
-  //   );
-  //   return await firstValueFrom(resp$);
-  // }
-
-
-
-  /**
-   * Deletes an image with the given key from the server.
-   * @param key The key of the image to delete.
-   * @returns A promise that resolves when the deletion is complete.
-   */
-  // async deleteImage(key: string): Promise<void> {
-  //   const resp$ = this.http.delete<void>(
-  //     `${this.baseUrl}/images/${encodeURIComponent(key)}`
-  //   );
-  //   await firstValueFrom(resp$);
-  // }
+  
   /**
    * Deletes an image with the given key from the server.
    * @param key The key of the image to delete.
