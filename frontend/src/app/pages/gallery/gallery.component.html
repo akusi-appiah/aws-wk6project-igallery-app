@@ -4,32 +4,33 @@
 <div class="upload-container">
   <form #fileForm>
     <input type="file" accept="image/*" (change)="onFile($event)"/>
+     <input type="text" placeholder="Enter image description" (input)="onDescriptionChange($event)" />
   </form>
-  <button (click)="upload()" [disabled]="loading || !selectedFile()">
+  <button (click)="upload()" [disabled]="loading() || !selectedFile()">
     Upload
   </button>
 </div>
 
 @if(showPreviewWindow()){
   <div class="upload-view-container">
-    @if(displayImageUrl){
+    @if(displayImageUrl()){
       <div class="preview">
-          <img [src]="displayImageUrl" class="preview-img" alt="Selected" />
+          <img [src]="displayImageUrl()" class="preview-img" alt="Selected" />
       </div>
     }
   </div>
 }
 <div class="display-description">
-    @if (displayImageUrl) {
-        <div class="display-img-container">
-            <span>viewing :{{selectedFile() ? 'Uploaded Image - ':"Selected Image - " }} {{selectedImageUrl}}</span>
-            <button (click)="resetInputForm()">❌</button>
-        </div> 
-    }
+  @if (displayImageUrl()) {
+      <div class="display-img-container">
+          <span>viewing :{{selectedFile() ? 'Uploaded Image - ':"Selected Image - " }} {{selectedImageUrl()}}</span>
+          <button (click)="resetInputForm()">❌</button>
+      </div> 
+  }
 </div>
 
-@if(error){
-    <p style="color:red;">❌ {{error}}</p>
+@if(error()){
+    <p style="color:red;">❌ {{error()}}</p>
 }
 
 <!-- Gallery table -->
@@ -39,21 +40,23 @@
             <tr>
             <th>Image</th>
             <th>File Name </th>
+            <th>Description</th>
+            <th>Uploaded At</th>
             <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            @for(img of imageList(); track img.key) {
+            @for(img of imageList(); track img.id) {
                 <tr>
+                    <td><img [src]="img.url" alt="Thumbnail"/></td>
+                    <td>{{ img.fileName }}</td>
+                    <td>{{ img.fileDescription || 'No description' }}</td>
+                    <td>{{ img.uploadedAt | date:'medium' }}</td>
                     <td>
-                        <img [src]="img.url" alt="thumb" />
-                    </td>
-                    <td>{{ img.key.substring(8) }}</td>
-                    <td>
-                        <a href="#" (click)="viewImage(img); $event.preventDefault()">View</a>
-                        |
-                        <button (click)="delete(img.key)" [disabled]="loading">Delete</button>
-                    </td>
+                      <a href="javascript:void(0)" (click)="viewImage(img); $event.preventDefault()">View</a>
+                      |
+                      <button href="javascript:void(0)" (click)="delete(img.id)" [disabled]="loading()">Delete</button>
+                    </td>   
                 </tr>
             }
         </tbody>
@@ -62,14 +65,12 @@
 
 <!-- Pagination -->
 <div class="pagination">
-  <button (click)="back()" [disabled]="prevTokens.length==0 || loading">
-    ← Back
-  </button>
-  <button (click)="next()" [disabled]="!nextToken || loading">
-    Next →
-  </button>
+  <div>
+    <button (click)="back()" [disabled]="currentPage() === 1">← Back</button>
+    <button (click)="next()" [disabled]="!nextPage">Next →</button>
+  </div>
 
-  @if(loading) {
+  @if(loading()) {
     <span>Loading...</span>
   }
 </div>
