@@ -13,11 +13,19 @@ body {
   text-align: center;
 }
 
+input[type="text"]{ padding: 5px 5px; line-height: 20px;width:430px; border: 1px solid #ccc; border-radius: 4px; }
 
 .preview {
   text-align: center;
 }
 
+
+.error-message {
+ width: 100%;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+}
 
 .preview-img {
   max-width: 300px;
@@ -59,18 +67,30 @@ body {
   margin-bottom:10px;
 }
 
+.main-upload-container{
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.6rem;
+  align-items: start;
+  justify-content: center;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  border:1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  padding: 1rem;
+}
+
+
 .upload-container {
   display: flex;
   justify-self: center;
   justify-content: space-between;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  padding: 1rem;
-  width: 60%;
-  max-width: 400px;
+ 
+  width: 100%;
+  max-width: 100%;
   background: #fff;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  margin-bottom: 1rem;
 }
 
 .upload-container input[type="file"] {

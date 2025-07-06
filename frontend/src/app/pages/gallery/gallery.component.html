@@ -1,14 +1,17 @@
 <h2 class="header-container">Brand Images Gallery</h2>
 
 <!-- Upload control -->
-<div class="upload-container">
-  <form #fileForm>
-    <input type="file" accept="image/*" (change)="onFile($event)"/>
-     <input type="text" placeholder="Enter image description" (input)="onDescriptionChange($event)" />
-  </form>
-  <button (click)="upload()" [disabled]="loading() || !selectedFile()">
-    Upload
-  </button>
+<div class="main-upload-container">
+  <div class="upload-container">
+    <form #fileForm>
+      <input type="file" accept="image/*" (change)="onFile($event)"/>
+      
+    </form>
+    <button (click)="upload()" [disabled]="loading() || !selectedFile()">
+      Upload
+    </button>
+  </div>
+  <input type="text" placeholder="Enter image description" (input)="onDescriptionChange($event)" />
 </div>
 
 @if(showPreviewWindow()){
@@ -30,7 +33,10 @@
 </div>
 
 @if(error()){
-    <p style="color:red;">❌ {{error()}}</p>
+  <div class="error-message">
+    <p  style="color:red;">❌ {{error()}}</p>
+  </div>
+    
 }
 
 <!-- Gallery table -->
