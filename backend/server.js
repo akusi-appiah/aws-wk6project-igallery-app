@@ -27,8 +27,8 @@ const PORT = process.env.PORT || 3000;
 const AWS_REGION = process.env.AWS_REGION;
 
 // Validate environment variables
-if (!AWS_REGION || !BUCKET || !process.env.DB_SECRET_ARN || !process.env.DB_HOST) {
-  console.error("❌ Missing required environment variables: AWS_REGION, S3_BUCKET, DB_SECRET_ARN, and DB_HOST must be set.");
+if (!AWS_REGION || !BUCKET || !process.env.DB_SECRET_NAME || !process.env.DB_HOST) {
+  console.error("❌ Missing required environment variables: AWS_REGION, S3_BUCKET, DB_SECRET_NAME, and DB_HOST must be set.");
   process.exit(1);
 }
 
