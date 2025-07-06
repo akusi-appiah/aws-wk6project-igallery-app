@@ -1,59 +1,59 @@
-name: Build and Push to ECR
+# name: Build and Push to ECR
 
-on:
-  push:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
 
-jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+# jobs:
+#   build-and-push:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-1  
+#       - name: Configure AWS Credentials
+#         uses: aws-actions/configure-aws-credentials@v4
+#         with:
+#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#           aws-region: eu-west-1  
 
-      - name: Log in to ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+#       - name: Log in to ECR
+#         id: login-ecr
+#         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Create ECR repository if not exists
-        id: ecr-repo
-        run: |
-          REPO_NAME="igallery-app" 
-          REPO_URI=$(aws ecr describe-repositories --repository-names $REPO_NAME --query 'repositories[0].repositoryUri' --output text)
-          echo "repo_uri=$REPO_URI" >> $GITHUB_OUTPUT
+#       - name: Create ECR repository if not exists
+#         id: ecr-repo
+#         run: |
+#           REPO_NAME="igallery-app" 
+#           REPO_URI=$(aws ecr describe-repositories --repository-names $REPO_NAME --query 'repositories[0].repositoryUri' --output text)
+#           echo "repo_uri=$REPO_URI" >> $GITHUB_OUTPUT
 
-      - name: Build & Push Placeholder
-        run: |
-          IMAGE_URI="${{ steps.ecr-repo.outputs.repo_uri }}:latest"
-          echo "Building and pushing: $IMAGE_URI"
+      # - name: Build & Push Placeholder
+      #   run: |
+      #     IMAGE_URI="${{ steps.ecr-repo.outputs.repo_uri }}:latest"
+      #     echo "Building and pushing: $IMAGE_URI"
 
-          # Create minimal Node.js server that listens on port 3000
-          cat > server.js <<'EOF'
-          const http = require('http');
-          const server = http.createServer((req, res) => {
-            res.writeHead(200, {'Content-Type': 'text/html'});
-            res.end('<h1>Hello Akwasi, Welcome to a new World 2025 Onwards</h1>');
-          });
-          server.listen(3000, '0.0.0.0', () => console.log('Placeholder running on port 3000'));
-          EOF
+      #     # Create minimal Node.js server that listens on port 3000
+      #     cat > server.js <<'EOF'
+      #     const http = require('http');
+      #     const server = http.createServer((req, res) => {
+      #       res.writeHead(200, {'Content-Type': 'text/html'});
+      #       res.end('<h1>Hello Akwasi, Welcome to a new World 2025 Onwards</h1>');
+      #     });
+      #     server.listen(3000, '0.0.0.0', () => console.log('Placeholder running on port 3000'));
+      #     EOF
           
-          # Create Dockerfile
-          cat > Dockerfile <<EOF
-          FROM node:18-slim
-          WORKDIR /app
-          COPY server.js .
-          EXPOSE 3000
-          CMD ["node", "server.js"]
-          EOF
+      #     # Create Dockerfile
+      #     cat > Dockerfile <<EOF
+      #     FROM node:18-slim
+      #     WORKDIR /app
+      #     COPY server.js .
+      #     EXPOSE 3000
+      #     CMD ["node", "server.js"]
+      #     EOF
 
-          docker build -t igallery-repo:latest .
-          docker tag igallery-repo:latest "$IMAGE_URI"
-          docker push "$IMAGE_URI"
+      #     docker build -t igallery-repo:latest .
+      #     docker tag igallery-repo:latest "$IMAGE_URI"
+      #     docker push "$IMAGE_URI"

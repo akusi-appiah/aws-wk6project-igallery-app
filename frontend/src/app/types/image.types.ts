@@ -1,6 +1,13 @@
-export type image = { key: string; url: string }; // Type for image URL
+export type image = {
+  id: string;
+  key: string;
+  url: string;
+  fileName: string;
+  fileDescription: string | null;
+  uploadedAt: string;
+};
 
 export interface ImageListResponse {
-  images: { key: string; url: string }[];
-  nextToken?: string;
+  images_data: image[];
+  nextPage?: number;
 }

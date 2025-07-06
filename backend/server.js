@@ -27,8 +27,8 @@ const PORT = process.env.PORT || 3000;
 const AWS_REGION = process.env.AWS_REGION;
 
 // Validate environment variables
-if (!AWS_REGION || !BUCKET || !process.env.DB_SECRET_ARN) {
-  console.error("❌ Missing required environment variables: AWS_REGION, S3_BUCKET, and DB_SECRET_ARN must be set.");
+if (!AWS_REGION || !BUCKET || !process.env.DB_SECRET_ARN || !process.env.DB_HOST) {
+  console.error("❌ Missing required environment variables: AWS_REGION, S3_BUCKET, DB_SECRET_ARN, and DB_HOST must be set.");
   process.exit(1);
 }
 
@@ -56,8 +56,6 @@ async function getDatabaseCredentials() {
       username: secret.username,
       password: secret.password,
       database: secret.dbname,
-      host: secret.host,
-      port: 5432,
     };
   } catch (err) {
     console.error("❌ Error retrieving database credentials:", err);
@@ -68,19 +66,25 @@ async function getDatabaseCredentials() {
 // Function to create database connection pool
 async function createDatabasePool() {
   const creds = await getDatabaseCredentials();
-  const connectionString = `postgres://${creds.username}:${creds.password}@${creds.host}:${creds.port}/${creds.database}`;
+  const connectionString = `postgres://${creds.username}:${creds.password}@${process.env.DB_HOST}:${process.env.DB_PORT}/${creds.database}`;
 
   const poolConfig = {
     connectionString,
   };
 
-  if (process.env.NODE_ENV === 'production') {
-    // Use SSL with RDS certificate for production
+  // Check if SSL certificate file exists
+  const certPath = path.join(__dirname, 'eu-west-1-bundle.pem');
+  const certExists = fs.existsSync(certPath);
+
+  if (certExists) {
+    // Use SSL with certificate if available
+    console.log('✅ Using SSL with eu-west-1-bundle.pem');
     poolConfig.ssl = {
-      ca: fs.readFileSync(path.join(__dirname, 'rds-ca-2019-root.pem')).toString(),
+      ca: fs.readFileSync(certPath).toString(),
     };
   } else {
-    // For development, allow self-signed certificates
+    // Fallback for testing without SSL verification
+    console.log('⚠️ SSL certificate not found, using unverified SSL for testing');
     poolConfig.ssl = { rejectUnauthorized: false };
   }
 
