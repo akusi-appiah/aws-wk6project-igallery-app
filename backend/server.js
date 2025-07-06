@@ -49,7 +49,7 @@ const secretsManagerClient = new SecretsManagerClient({ region: process.env.AWS_
 // Function to fetch database credentials from AWS Secrets Manager
 async function getDatabaseCredentials() {
   try {
-    const command = new GetSecretValueCommand({ SecretId: process.env.DB_SECRET_ARN });
+    const command = new GetSecretValueCommand({ SecretId: process.env.DB_SECRET_NAME });
     const response = await secretsManagerClient.send(command);
     const secret = JSON.parse(response.SecretString);
     return {
