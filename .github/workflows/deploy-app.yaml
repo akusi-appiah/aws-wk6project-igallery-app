@@ -41,31 +41,3 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "NEW_IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
-
-      # - name: Build & Push Placeholder
-      #   run: |
-      #     IMAGE_URI="${{ steps.ecr-repo.outputs.repo_uri }}:latest"
-      #     echo "Building and pushing: $IMAGE_URI"
-
-      #     # Create minimal Node.js server that listens on port 3000
-      #     cat > server.js <<'EOF'
-      #     const http = require('http');
-      #     const server = http.createServer((req, res) => {
-      #       res.writeHead(200, {'Content-Type': 'text/html'});
-      #       res.end('<h1>Hello Akwasi, Welcome to a new World 2025 Again</h1>');
-      #     });
-      #     server.listen(3000, '0.0.0.0', () => console.log('Placeholder running on port 3000'));
-      #     EOF
-          
-      #     # Create Dockerfile
-      #     cat > Dockerfile <<EOF
-      #     FROM node:18-slim
-      #     WORKDIR /app
-      #     COPY server.js .
-      #     EXPOSE 3000
-      #     CMD ["node", "server.js"]
-      #     EOF
-
-      #     docker build -t igallery-repo:latest .
-      #     docker tag igallery-repo:latest "$IMAGE_URI"
-      #     docker push "$IMAGE_URI"
