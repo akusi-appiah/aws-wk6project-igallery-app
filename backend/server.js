@@ -19,6 +19,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
 // Serve static files from "public"
 app.use(express.static('public'));
 
@@ -94,9 +100,6 @@ async function createDatabasePool() {
   });
   return pool;
 }
-
-
-
 
 // Log environment variables for debugging
 console.log(`Initializing S3 client with region: ${process.env.AWS_REGION}, bucket: ${BUCKET}`);
