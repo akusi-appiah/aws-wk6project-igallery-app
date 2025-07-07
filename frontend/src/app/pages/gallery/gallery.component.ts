@@ -2,11 +2,12 @@ import { Component, computed, ElementRef, inject, OnInit, signal, viewChild } fr
 import { ImageService } from '../../services/image.service';
 import { CommonModule } from '@angular/common';
 import { image } from '../../types/image.types';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-gallery',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,FormsModule],
   templateUrl: './gallery.component.html',
   styleUrl: './gallery.component.css'
 })
@@ -142,11 +143,6 @@ export class GalleryComponent implements OnInit {
     this.fileDescription.set('');
     this.displayImageUrl.set(null);
     this.selectedImageUrl.set('');
-  }
-
-  onDescriptionChange(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.fileDescription.set(input.value || '');
   }
 }
 

@@ -15,6 +15,7 @@ body {
 
 input[type="text"]{ padding: 5px 5px; line-height: 20px;width:430px; border: 1px solid #ccc; border-radius: 4px; }
 
+
 .preview {
   text-align: center;
 }

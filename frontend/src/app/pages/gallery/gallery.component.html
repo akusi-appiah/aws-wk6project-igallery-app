@@ -11,8 +11,9 @@
       Upload
     </button>
   </div>
-  <input type="text" placeholder="Enter image description" (input)="onDescriptionChange($event)" />
+  <input type="text" placeholder="Enter image description" [(ngModel)]="fileDescription" />
 </div>
+
 
 @if(showPreviewWindow()){
   <div class="upload-view-container">
