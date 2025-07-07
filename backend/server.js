@@ -217,7 +217,7 @@ async function ensureTable(pool) {
     });
 
   // 2. Delete image endpoint
-    app.delete("/images/:key", async (req, res, next) => {
+    app.delete("/images/:id", async (req, res, next) => {
       try {
         const id = req.params.id;
         const query = 'SELECT s3_key FROM images WHERE id = $1';
