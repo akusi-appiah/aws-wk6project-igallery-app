@@ -13,20 +13,28 @@ const { SecretsManagerClient, GetSecretValueCommand } = require("@aws-sdk/client
 
 // Add path module
 const path = require('path');
+const publicDir = path.resolve(__dirname, '../public');
+
 const fs = require('fs'); // For reading SSL certificate
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).send('OK');
-});
-
 // Serve static files from "public"
-app.use(express.static('public'));
+app.use(express.static(publicDir));
+
+
+if (process.env.NODE_ENV === 'production') {
+  // Health check
+  app.get('/health', (req, res) => res.status(200).send('OK'));
+
+  // Only use SPA fallback for non-API routes
+  app.get(/^(?!\/api|\/upload|\/images|\/health|\/config\.js).*/, (req, res) => {
+    console.log(`Serving SPA index.html for path: ${req.path}`);
+    res.sendFile(path.join(publicDir, 'index.html'));
+  });
+}
 
 const BUCKET = process.env.S3_BUCKET;
 const PORT = process.env.PORT || 3000;
@@ -239,12 +247,6 @@ async function ensureTable(pool) {
         console.error('❌ Error deleting image:', err);
         next(err);
       }
-    });
-
-    // Catch-all route for SPA
-    app.get(/^(?!\/api|\/upload|\/images|\/config\.js).*/, (req, res) => {
-      console.log(`Serving SPA index.html for path: ${req.path}`);
-      res.sendFile(path.join(__dirname, 'public', 'index.html'));
     });
 
     // Error handler (must come after all routes)
