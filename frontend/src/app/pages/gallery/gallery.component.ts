@@ -21,6 +21,7 @@ export class GalleryComponent implements OnInit {
   error=signal<string | null>(null);
   selectedFile=signal<File | undefined>(undefined);
   fileDescription = signal<string>('');
+  viewerDescription = signal<string>('');
   displayImageUrl = signal<string | null>(null);
   selectedImageUrl = signal<string | null>(null);// URL for selected image
   galleryForm = viewChild<ElementRef<HTMLFormElement>>('fileForm');
@@ -75,6 +76,7 @@ export class GalleryComponent implements OnInit {
     if (input.files?.length) {
       this.selectedFile.set(input.files[0]);
       this.selectedImageUrl.set(URL.createObjectURL(this.selectedFile()!));
+      this.viewerDescription.set(this.selectedImageUrl()!);
       this.displayImageUrl.set(this.selectedImageUrl());// Show selected image
     }
   }
@@ -130,6 +132,7 @@ export class GalleryComponent implements OnInit {
   viewImage(img:image) {
     this.displayImageUrl.set(img.url);
     this.selectedImageUrl.set(img.fileName);
+    this.viewerDescription.set(img.fileDescription ?? '');
   }
 
   clearImageDescription() {
@@ -143,6 +146,7 @@ export class GalleryComponent implements OnInit {
     this.fileDescription.set('');
     this.displayImageUrl.set(null);
     this.selectedImageUrl.set('');
+    this.viewerDescription.set('');
   }
 }
 

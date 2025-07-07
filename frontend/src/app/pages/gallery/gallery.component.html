@@ -26,10 +26,10 @@
 }
 <div class="display-description">
   @if (displayImageUrl()) {
-      <div class="display-img-container">
-          <span>viewing :{{selectedFile() ? 'Uploaded Image - ':"Selected Image - " }} {{selectedImageUrl()}}</span>
-          <button (click)="resetInputForm()">❌</button>
-      </div> 
+    <div class="display-img-container">
+        <span class="display-narration-span">{{selectedFile()? "Image URL" : "Image Description"}} : <span class="describe-narration">{{viewerDescription()}}</span></span> 
+        <button (click)="resetInputForm()">❌</button>
+    </div> 
   }
 </div>
 
@@ -74,7 +74,7 @@
 <div class="pagination">
   <div>
     <button (click)="back()" [disabled]="currentPage() === 1">← Back</button>
-    <button (click)="next()" [disabled]="!nextPage">Next →</button>
+    <button (click)="next()" [disabled]="!nextPage()">Next →</button>
   </div>
 
   @if(loading()) {
