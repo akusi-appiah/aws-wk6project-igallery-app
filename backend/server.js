@@ -13,28 +13,25 @@ const { SecretsManagerClient, GetSecretValueCommand } = require("@aws-sdk/client
 
 // Add path module
 const path = require('path');
-const publicDir = path.resolve(__dirname, '../public');
-
 const fs = require('fs'); // For reading SSL certificate
-
 const app = express();
+
+// 1. Health check - MUST BE FIRST ROUTE (before any middleware)
+app.get('/health', (req, res) => res.status(200).end());
+
 app.use(cors());
 app.use(express.json());
 
+const publicDir = path.resolve(__dirname, '../public');
 // Serve static files from "public"
 app.use(express.static(publicDir));
 
 
-if (process.env.NODE_ENV === 'production') {
-  // Health check
-  app.get('/health', (req, res) => res.status(200).send('OK'));
-
-  // Only use SPA fallback for non-API routes
-  app.get(/^(?!\/api|\/upload|\/images|\/health|\/config\.js).*/, (req, res) => {
-    console.log(`Serving SPA index.html for path: ${req.path}`);
-    res.sendFile(path.join(publicDir, 'index.html'));
-  });
-}
+// Only use SPA fallback for non-API routes
+app.get(/^(?!\/api|\/upload|\/images|\/health|\/config\.js).*/, (req, res) => {
+  console.log(`Serving SPA index.html for path: ${req.path}`);
+  res.sendFile(path.join(publicDir, 'index.html'));
+});
 
 const BUCKET = process.env.S3_BUCKET;
 const PORT = process.env.PORT || 3000;
@@ -151,7 +148,8 @@ async function ensureTable(pool) {
     throw err;
   }
 }
-
+// Declare server at top level
+let server;
 
 // Start server after ensuring bucket and table
 (async () => {
@@ -256,8 +254,27 @@ async function ensureTable(pool) {
     });
 
     // Start listening
-    app.listen(PORT || 3000, '0.0.0.0', () => {
+    server = app.listen(PORT || 3000, '0.0.0.0', () => {
       console.log(`🚀 Backend running at http://localhost:${PORT}`);
+    });
+
+
+    // After app.listen()
+    // Graceful shutdown handler
+    process.on('SIGTERM', () => {
+      console.log('SIGTERM received: Shutting down gracefully');
+      
+      if (server) {
+        server.close(() => {
+          console.log('HTTP server closed');
+          process.exit(0);
+        });
+      }
+      
+      setTimeout(() => {
+        console.error('Forcing shutdown after timeout');
+        process.exit(1);
+      }, 5000);
     });
 
 
