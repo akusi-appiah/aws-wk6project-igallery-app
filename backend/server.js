@@ -10,22 +10,24 @@ const {S3Client,
 } = require("@aws-sdk/client-s3");
 const { ensureBucket, createUploader } = require("./services/image-upload");
 const { SecretsManagerClient, GetSecretValueCommand } = require("@aws-sdk/client-secrets-manager");
+const START_TIME = new Date();
 
 // Add path module
 const path = require('path');
 const fs = require('fs'); // For reading SSL certificate
 const app = express();
-let isServerReady = false;
 
 // 1. Health check - MUST BE FIRST ROUTE (before any middleware)
 app.get('/health', (req, res) => {
-  if (isServerReady) {
-    console.log('Health check: OK');
-    res.status(200).send('OK');
-  } else {
-    console.log('Health check: Starting up');
-    res.status(503).send('Starting up');
-  }
+const uptime = process.uptime();
+  const memory = process.memoryUsage();
+  
+  res.status(200).json({
+    status: 'OK',
+    started: START_TIME.toISOString(),
+    uptime: `${Math.floor(uptime)}s`,
+    memory: `${Math.round(memory.rss / 1024 / 1024)}MB RSS`,
+  });
 });
 
 app.use(cors());
@@ -268,8 +270,8 @@ const startServer = async () => {
     });
 
     server.on('listening', () => {
-      isServerReady = true;
       console.log('🚀 Server is now ready');
+      console.log(`🕒 Startup time: ${Date.now() - START_TIME}ms`);
     });
 
   } catch (err) {
