@@ -8,6 +8,8 @@ RUN npm run build -- --configuration=production
 
 # Stage 2: Set up the backend (Node.js)
 FROM node:18-slim
+USER root
+RUN apt-get update && apt-get install -y curl && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app/backend
 COPY backend/package*.json ./

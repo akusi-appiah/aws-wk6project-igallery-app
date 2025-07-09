@@ -17,23 +17,12 @@ const path = require('path');
 const fs = require('fs'); // For reading SSL certificate
 const app = express();
 
-// 1. Health check - MUST BE FIRST ROUTE (before any middleware)
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'OK',
-    started: START_TIME.toISOString(),
-    uptime: `${Math.floor(uptime)}s`,
-    memory: `${Math.round(memory.rss / 1024 / 1024)}MB RSS`,
-  });
-});
-
 app.use(cors());
 app.use(express.json());
 
 const publicDir = path.resolve(__dirname, '../public');
 // Serve static files from "public"
 app.use(express.static(publicDir));
-
 
 // Only use SPA fallback for non-API routes
 app.get(/^(?!\/api|\/upload|\/images|\/health|\/config\.js).*/, (req, res) => {
@@ -156,8 +145,6 @@ async function ensureTable(pool) {
     throw err;
   }
 }
-// Declare server at top level
-let server;
 
 // Start server after ensuring bucket and table
 const startServer = async () => {
@@ -173,7 +160,13 @@ const startServer = async () => {
     // Middleware to upload image to S3
     const upload = createUploader(BUCKET);
 
-  //Upload endpoint
+    // 1. Health check - MUST BE FIRST ROUTE (before any middleware)
+    app.get('/health', (req, res) => {
+      console.log(`🩺 Health check received at ${new Date().toISOString()}`);
+      res.status(200).send('OK');
+    });
+
+    //Upload endpoint
     app.post("/upload", upload, async(req, res,next) => {
       try {
         const s3Key = req.s3Key;
@@ -191,7 +184,7 @@ const startServer = async () => {
       }
     });
 
-  //1. Fetch images endpoint
+    //1. Fetch images endpoint
     app.get("/images", async (req, res, next) => {
       try {
         const size = parseInt(req.query.size) || 3; // Default to 3 if not provided
@@ -262,7 +255,7 @@ const startServer = async () => {
     });
 
     // Start listening
-    server = app.listen(PORT || 3000, '0.0.0.0', () => {
+    app.listen(PORT || 3000, '0.0.0.0', () => {
       console.log(`🚀 Backend running at http://localhost:${PORT}`);
       console.log(`🕒 Startup time: ${Date.now() - START_TIME}ms`);
     });
