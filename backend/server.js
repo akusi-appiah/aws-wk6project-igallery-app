@@ -17,7 +17,10 @@ const fs = require('fs'); // For reading SSL certificate
 const app = express();
 
 // 1. Health check - MUST BE FIRST ROUTE (before any middleware)
-app.get('/health', (req, res) => res.status(200).end());
+app.get('/health', (req, res) => {
+  console.log('Health check triggered at', new Date().toISOString());
+  res.status(200).end();
+});
 
 app.use(cors());
 app.use(express.json());
@@ -149,7 +152,7 @@ async function ensureTable(pool) {
   }
 }
 // Declare server at top level
-let server;
+let server = null;
 
 // Start server after ensuring bucket and table
 (async () => {
@@ -260,21 +263,10 @@ let server;
 
 
     // After app.listen()
-    // Graceful shutdown handler
     process.on('SIGTERM', () => {
-      console.log('SIGTERM received: Shutting down gracefully');
-      
       if (server) {
-        server.close(() => {
-          console.log('HTTP server closed');
-          process.exit(0);
-        });
+        server.close(() => process.exit(0));
       }
-      
-      setTimeout(() => {
-        console.error('Forcing shutdown after timeout');
-        process.exit(1);
-      }, 5000);
     });
 
 
