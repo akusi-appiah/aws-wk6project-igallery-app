@@ -19,7 +19,6 @@ COPY --from=frontend-build /app/frontend/dist/frontend/browser /app/backend/publ
 
 USER node 
 
-
 # Expose the backend port
 EXPOSE 3000
 
