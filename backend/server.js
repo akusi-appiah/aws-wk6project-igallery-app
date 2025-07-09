@@ -15,11 +15,17 @@ const { SecretsManagerClient, GetSecretValueCommand } = require("@aws-sdk/client
 const path = require('path');
 const fs = require('fs'); // For reading SSL certificate
 const app = express();
+let isServerReady = false;
 
 // 1. Health check - MUST BE FIRST ROUTE (before any middleware)
 app.get('/health', (req, res) => {
-   console.log('Health check received at', new Date().toISOString());
-  res.status(200).send('OK');
+  if (isServerReady) {
+    console.log('Health check: OK');
+    res.status(200).send('OK');
+  } else {
+    console.log('Health check: Starting up');
+    res.status(503).send('Starting up');
+  }
 });
 
 app.use(cors());
@@ -261,15 +267,10 @@ const startServer = async () => {
       console.log(`🚀 Backend running at http://localhost:${PORT}`);
     });
 
-
-    // Verify server is actually listening
-    setImmediate(() => {
-      if (!server.listening) {
-        console.error('❌ Server failed to start listening');
-        process.exit(1);
-      }
+    server.on('listening', () => {
+      isServerReady = true;
+      console.log('🚀 Server is now ready');
     });
-
 
   } catch (err) {
     console.error("❌ Failed to setup bucket or table:", err);
@@ -277,17 +278,5 @@ const startServer = async () => {
   }
 };
 
-
 // Start the server
 startServer();
-
-
-// Add debug endpoint
-app.get('/debug', (req, res) => {
-  res.json({
-    status: 'running',
-    port: PORT,
-    listening: server.listening,
-    time: new Date().toISOString()
-  });
-});
