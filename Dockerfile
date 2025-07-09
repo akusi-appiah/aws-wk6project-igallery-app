@@ -8,10 +8,6 @@ RUN npm run build -- --configuration=production
 
 # Stage 2: Set up the backend (Node.js)
 FROM node:18-slim
-USER root
-RUN apt-get update && \
-    apt-get install -y net-tools && \
-    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app/backend
 COPY backend/package*.json ./
@@ -21,11 +17,6 @@ COPY backend/ ./backend
 # Copy the built frontend files into the backend's static directory
 COPY --from=frontend-build /app/frontend/dist/frontend/browser /app/backend/public
 
-# Health check script (simplified)
-RUN echo '#!/bin/sh\n\
-echo "Health check override - Container is healthy"\n\
-exit 0' > /usr/local/bin/healthcheck && \
-    chmod 755 /usr/local/bin/healthcheck
 USER node 
 
 

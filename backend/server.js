@@ -19,9 +19,6 @@ const app = express();
 
 // 1. Health check - MUST BE FIRST ROUTE (before any middleware)
 app.get('/health', (req, res) => {
-const uptime = process.uptime();
-  const memory = process.memoryUsage();
-  
   res.status(200).json({
     status: 'OK',
     started: START_TIME.toISOString(),
@@ -267,10 +264,6 @@ const startServer = async () => {
     // Start listening
     server = app.listen(PORT || 3000, '0.0.0.0', () => {
       console.log(`🚀 Backend running at http://localhost:${PORT}`);
-    });
-
-    server.on('listening', () => {
-      console.log('🚀 Server is now ready');
       console.log(`🕒 Startup time: ${Date.now() - START_TIME}ms`);
     });
 
