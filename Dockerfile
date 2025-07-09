@@ -8,11 +8,6 @@ RUN npm run build -- --configuration=production
 
 # Stage 2: Set up the backend (Node.js)
 FROM node:20-bookworm-slim
-USER root
-# RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
-# Install basic networking tools (iproute2 = ip, ss, etc.)
-RUN apt-get update && apt-get install -y iproute2 && rm -rf /var/lib/apt/lists/*
-
 WORKDIR /app/backend
 COPY backend/package*.json ./
 RUN npm ci --only=production
