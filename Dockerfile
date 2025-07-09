@@ -9,8 +9,8 @@ RUN npm run build -- --configuration=production
 # Stage 2: Set up the backend (Node.js)
 FROM node:18-slim
 # Install curl or wget for health checks
-USER root
-RUN apt-get update && apt-get install -y curl && apt-get clean && rm -rf /var/lib/apt/lists/*
+# USER root
+# RUN apt-get update && apt-get install -y curl && apt-get clean && rm -rf /var/lib/apt/lists/*
 USER node 
 
 WORKDIR /app/backend
