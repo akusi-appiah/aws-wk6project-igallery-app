@@ -9,10 +9,10 @@ RUN npm run build -- --configuration=production
 # Stage 2: Set up the backend (Node.js)
 FROM node:18-slim
 # Install curl or wget for health checks
-# USER root
+USER root
 # RUN apt-get update && apt-get install -y curl && apt-get clean && rm -rf /var/lib/apt/lists/*
-USER node 
-
+RUN apt-get update && apt-get install -y --no-install-recommends curl && \
+    rm -rf /var/lib/apt/lists/*
 WORKDIR /app/backend
 COPY backend/package*.json ./
 RUN npm ci --only=production
@@ -21,8 +21,14 @@ COPY backend/ ./backend
 # Copy the built frontend files into the backend's static directory
 COPY --from=frontend-build /app/frontend/dist/frontend/browser /app/backend/public
 
-# # Run as non-root user for security
-# USER node
+# Add this health check script
+RUN echo '#!/bin/sh \n\
+curl -fsS http://localhost:3000/health || exit 1' > /usr/local/bin/healthcheck \
+    && chmod +x /usr/local/bin/healthcheck
+
+USER node 
+
+
 
 # Expose the backend port
 EXPOSE 3000

@@ -18,8 +18,8 @@ const app = express();
 
 // 1. Health check - MUST BE FIRST ROUTE (before any middleware)
 app.get('/health', (req, res) => {
-  console.log('Health check triggered at', new Date().toISOString());
-  res.status(200).end();
+   console.log('Health check received at', new Date().toISOString());
+  res.status(200).send('OK');
 });
 
 app.use(cors());
@@ -152,10 +152,10 @@ async function ensureTable(pool) {
   }
 }
 // Declare server at top level
-let server = null;
+let server;
 
 // Start server after ensuring bucket and table
-(async () => {
+const startServer = async () => {
   try {
     await ensureBucket(BUCKET);
     console.log(`✅ Successfully verified or created bucket: ${BUCKET}`);
@@ -262,10 +262,11 @@ let server = null;
     });
 
 
-    // After app.listen()
-    process.on('SIGTERM', () => {
-      if (server) {
-        server.close(() => process.exit(0));
+    // Verify server is actually listening
+    setImmediate(() => {
+      if (!server.listening) {
+        console.error('❌ Server failed to start listening');
+        process.exit(1);
       }
     });
 
@@ -274,4 +275,19 @@ let server = null;
     console.error("❌ Failed to setup bucket or table:", err);
     process.exit(1);
   }
-})();
+};
+
+
+// Start the server
+startServer();
+
+
+// Add debug endpoint
+app.get('/debug', (req, res) => {
+  res.json({
+    status: 'running',
+    port: PORT,
+    listening: server.listening,
+    time: new Date().toISOString()
+  });
+});
